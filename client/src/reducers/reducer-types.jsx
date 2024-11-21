@@ -1,0 +1,13 @@
+export const AUTH_LOGIN = "AUTH_LOGIN";
+export const AUTH_LOGOUT = "AUTH_LOGOUT";
+export const AUTH_REGISTER = "AUTH_REGISTER";
+export const AUTH_ERROR = "AUTH_ERROR";
+export const AUTH_LOADING = "AUTH_LOADING";
+export const AUTH_SUCCESS = "AUTH_SUCCESS";
+export const SET_ERROR_MESSAGE_EMPTY = "SET_ERROR_MESSAGE_EMPTY";
+export const QUIZ_LOADING = "QUIZ_LOADING";
+export const QUIZ_SUCCESS = "QUIZ_SUCCESS";
+export const QUIZ_ERROR = "QUIZ_ERROR";
+export const SET_ALL_QUIZZES = "SET_ALL_QUIZZES";
+export const GET_ALL_QUIZZES = "GET_ALL_QUIZZES";
+export const ADD_QUIZ = "ADD_QUIZ";
