@@ -26,18 +26,18 @@ export default function DashboardLayout() {
 
             <li>
               <NavLink
-                to={"/dashboard/quiz-set"}
+                to={"/dashboard/draft-quizzes"}
                 className="block py-2 px-4 rounded-lg text-gray-100 hover:bg-gray-100 hover:text-primary"
               >
-                Quiz Set
+                Draft Quizzes
               </NavLink>
             </li>
             <li>
               <NavLink
-                to={"/dashboard/quizzes"}
+                to={"/dashboard/published-quizzes"}
                 className="block py-2 px-4 rounded-lg text-gray-100 hover:bg-gray-100 hover:text-primary"
               >
-                Quizzes
+                Published Quizzes
               </NavLink>
             </li>
             <li>
@@ -45,7 +45,7 @@ export default function DashboardLayout() {
                 to={"/dashboard/quiz-set-entry"}
                 className="block py-2 px-4 rounded-lg text-gray-100 hover:bg-gray-100 hover:text-primary"
               >
-                Quiz Set Entry
+                Leaderboard
               </NavLink>
             </li>
           </ul>

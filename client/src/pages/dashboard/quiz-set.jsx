@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
 import Field from "../../components/form/field";
 import { QuizContext } from "../../context/context";
 
@@ -12,10 +13,15 @@ export default function QuizSet() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  const navigate = useNavigate();
+
+  const onSubmit = async (data) => {
     addQuiz({
       data,
       reset,
+    }).then((response) => {
+      const { status, id } = response;
+      if (status) navigate("/dashboard/quiz-set-entry/" + id);
     });
   };
 
@@ -24,8 +30,8 @@ export default function QuizSet() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column */}
         <div>
-          <a
-            href="#"
+          <Link
+            to={"/dashboard"}
             className="inline-flex items-center text-sm text-gray-600 mb-6 hover:text-buzzr-purple"
           >
             <svg
@@ -43,7 +49,7 @@ export default function QuizSet() {
               ></path>
             </svg>
             Back to home
-          </a>
+          </Link>
           <h2 className="text-3xl font-bold mb-6">
             Give your quiz title and description
           </h2>

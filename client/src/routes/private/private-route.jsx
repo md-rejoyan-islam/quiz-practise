@@ -1,6 +1,8 @@
 import DashboardLayout from "../../layouts/dashboard-layout";
 import MainLayout from "../../layouts/main-layout";
 import Dashboard from "../../pages/dashboard/dashboard";
+import DraftQuizzes from "../../pages/dashboard/draft-quizzes";
+import PublishedQuizzes from "../../pages/dashboard/published-quizzes";
 import QuizSet from "../../pages/dashboard/quiz-set";
 import QuizSetEntry from "../../pages/dashboard/quiz-set-entry";
 import Leaderboard from "../../pages/main/leaderboard";
@@ -50,7 +52,15 @@ const privateRoutes = [
         element: <QuizSet />,
       },
       {
-        path: "quiz-set-entry",
+        path: "draft-quizzes",
+        element: <DraftQuizzes />,
+      },
+      {
+        path: "published-quizzes",
+        element: <PublishedQuizzes />,
+      },
+      {
+        path: "quiz-set-entry/:id",
         element: <QuizSetEntry />,
       },
     ],
