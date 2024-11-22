@@ -1,14 +1,16 @@
 import { useContext } from "react";
-import { AuthContext } from "../../context/context";
+import { AuthContext, QuizContext } from "../../context/context";
 
 import PropTypes from "prop-types";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 export default function PrivateGuard({ children }) {
   const { user } = useContext(AuthContext);
+  const { loading } = useContext(QuizContext);
+  const location = useLocation();
 
-  if (!user) {
-    return <Navigate to="/login" />;
+  if (!user && !loading) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;

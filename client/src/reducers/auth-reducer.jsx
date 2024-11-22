@@ -9,7 +9,9 @@ import {
 } from "./reducer-types";
 
 export const initialAuthState = {
-  user: null,
+  user: localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null,
   accessToken: null,
   loading: false,
   error: null,

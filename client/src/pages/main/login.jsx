@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Field from "../../components/form/field";
 import { AuthContext } from "../../context/context";
 
@@ -14,7 +14,10 @@ export default function Login() {
   } = useForm();
 
   const [admin, setAdmin] = useState(false);
+  const navigate = useNavigate();
   const { authLogin } = useContext(AuthContext);
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   const onSubmit = (data) => {
     authLogin({
@@ -23,6 +26,8 @@ export default function Login() {
         role: admin ? "admin" : "user",
       },
       reset,
+      navigate,
+      from,
     });
   };
   return (

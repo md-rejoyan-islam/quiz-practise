@@ -25,7 +25,7 @@ const privateRoutes = [
         element: <Result />,
       },
       {
-        path: "/quiz",
+        path: "/quiz/:id",
         element: <Quiz />,
       },
       {

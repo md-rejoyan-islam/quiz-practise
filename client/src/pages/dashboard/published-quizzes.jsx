@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 import { QuizContext } from "../../context/context";
 
 export default function PublishedQuizzes() {
-  const { quizzes } = useContext(QuizContext);
+  const { adminQuizzes } = useContext(QuizContext);
 
-  const publishedQuizzes = quizzes.filter(
+  const publishedQuizzes = adminQuizzes.filter(
     (quiz) => quiz.status === "published"
   );
 

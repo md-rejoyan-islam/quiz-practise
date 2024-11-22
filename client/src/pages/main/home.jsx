@@ -1,12 +1,12 @@
 import clsx from "clsx";
 import { useContext } from "react";
+import { Link } from "react-router-dom";
 import UserBanner from "../../components/home/user-banner";
 import { AuthContext, QuizContext } from "../../context/context";
 
 export default function Home() {
   const { user } = useContext(AuthContext);
-  const { quizzes } = useContext(QuizContext);
-  console.log(quizzes);
+  const { userQuizzes } = useContext(QuizContext);
 
   return (
     <div className="container mx-auto ">
@@ -21,9 +21,12 @@ export default function Home() {
           <h3 className="text-2xl font-bold mb-6">Participate In Quizees</h3>
           {/* Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {quizzes?.map((quiz) => (
-              <a
-                href="./result.html"
+            {userQuizzes?.map((quiz) => (
+              <Link
+                to={`/quiz/${quiz.id}`}
+                state={{
+                  from: `/quiz/${quiz.id}`,
+                }}
                 className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] relative group cursor-pointer bg-gray-700"
                 key={quiz.id}
               >
@@ -46,7 +49,7 @@ export default function Home() {
                   alt={quiz?.title}
                   className="w-full h-full object-cover rounded mb-4"
                 />
-              </a>
+              </Link>
             ))}
             <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow max-h-[450px] relative group cursor-pointer ">
               <div className="absolute transition-all text-white  text-center top-1/2 -translate-y-1/2 px-4">

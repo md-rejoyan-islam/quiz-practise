@@ -47,15 +47,6 @@ export default function Header() {
                 Leaderboard
               </NavLink>
             </li>
-            <li>
-              <NavLink
-                to={"/quiz"}
-                className="px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors"
-                style={{ fontFamily: "Jaro" }}
-              >
-                Quiz
-              </NavLink>
-            </li>
           </>
         )}
 

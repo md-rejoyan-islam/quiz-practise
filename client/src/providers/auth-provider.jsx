@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useReducer, useRef } from "react";
 import { AuthContext } from "../context/context";
 
 import axios from "axios";
@@ -14,7 +14,7 @@ const AuthProvider = ({ children }) => {
   const [authState, authDispatch] = useReducer(authReducer, initialAuthState);
 
   // user login
-  const authLogin = async ({ data, reset }) => {
+  const authLogin = async ({ data, reset, navigate, from }) => {
     try {
       // authDispatch({ type: AUTH_LOADING, payload: null });
       const response = await axios.post(`${api}/auth/login`, {
@@ -26,8 +26,12 @@ const AuthProvider = ({ children }) => {
 
       // reset form
       reset();
+      // navigate
+      navigate(from, { replace: true });
 
-      // set cookies
+      // set token
+      // localStorage.setItem("accessToken", tokens.accessToken);
+      // localStorage.setItem("refreshToken", tokens.refreshToken);
       Cookies.set("accessToken", tokens.accessToken, {
         sameSite: "strict",
         secure: true,
@@ -36,6 +40,8 @@ const AuthProvider = ({ children }) => {
         sameSite: "strict",
         secure: true,
       });
+
+      localStorage.setItem("user", JSON.stringify(user));
       authDispatch({ type: AUTH_LOGIN, payload: { user } });
 
       // show success message
@@ -68,27 +74,31 @@ const AuthProvider = ({ children }) => {
   const getNewAccessToken = async () => {
     try {
       const response = await axios.post(`${api}/auth/refresh-token`, {
-        refreshToken: Cookies.get("refreshToken"),
+        refreshToken: localStorage.getItem("refreshToken"),
       });
       const { accessToken } = response.data.data;
-      console.log(accessToken);
 
-      Cookies.set("accessToken", accessToken, {
-        sameSite: "strict",
-        secure: true,
-      });
+      // Cookies.set("accessToken", accessToken, {
+      //   sameSite: "strict",
+      //   secure: true,
+      // });
+      localStorage.setItem("accessToken", accessToken);
     } catch (error) {
       toast.error(error.response.data.message);
       authDispatch({ type: AUTH_ERROR, payload: error.response.data });
       // remove all cookies
-      Cookies.remove("accessToken");
-      Cookies.remove("refreshToken");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      // Cookies.remove("accessToken");
+      // Cookies.remove("refreshToken");
     }
   };
 
   // logout
   const authLogout = () => {
     // remove all cookies
+    // localStorage.removeItem("accessToken");
+    // localStorage.removeItem("refreshToken");
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
     authDispatch({
@@ -99,12 +109,12 @@ const AuthProvider = ({ children }) => {
   // call getNewAccessToken on component mount only once
   const hasFetched = useRef(false);
 
-  useEffect(() => {
-    if (!hasFetched.current) {
-      getNewAccessToken();
-      hasFetched.current = true;
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!hasFetched.current) {
+  //     getNewAccessToken();
+  //     hasFetched.current = true;
+  //   }
+  // }, []);
 
   return (
     <AuthContext.Provider

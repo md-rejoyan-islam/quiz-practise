@@ -1,7 +1,9 @@
 import {
   ADD_QUESTION,
   ADD_QUIZ,
+  COMPLETE_LOADING,
   DELETE_QUESTION,
+  GET_ALL_USER_QUIZZES,
   QUIZ_ERROR,
   QUIZ_LOADING,
   SET_ALL_QUIZZES,
@@ -9,7 +11,8 @@ import {
 } from "./reducer-types";
 
 export const initialQuizState = {
-  quizzes: [],
+  adminQuizzes: [],
+  userQuizzes: [],
   loading: false,
   error: null,
 };
@@ -22,12 +25,17 @@ export const quizReducer = (state, action) => {
         loading: true,
         error: null,
       };
+    case COMPLETE_LOADING:
+      return {
+        ...state,
+        loading: false,
+      };
     case SET_ALL_QUIZZES:
       return {
         ...state,
         loading: false,
         error: null,
-        quizzes: action.payload.quizzes,
+        adminQuizzes: action.payload.adminQuizzes,
       };
     case QUIZ_ERROR:
       return {
@@ -40,14 +48,14 @@ export const quizReducer = (state, action) => {
         ...state,
         loading: false,
         error: null,
-        quizzes: [...state.quizzes, action.payload.quiz],
+        adminQuizzes: [...state.adminQuizzes, action.payload.quiz],
       };
     case ADD_QUESTION:
       return {
         ...state,
         loading: false,
         error: null,
-        quizzes: state.quizzes.map((quiz) => {
+        adminQuizzes: state.adminQuizzes.map((quiz) => {
           if (quiz.id === action.payload.id) {
             return {
               ...quiz,
@@ -62,7 +70,7 @@ export const quizReducer = (state, action) => {
         ...state,
         loading: false,
         error: null,
-        quizzes: state.quizzes.map((quiz) => {
+        adminQuizzes: state.adminQuizzes.map((quiz) => {
           if (quiz.id === action.payload.quizId) {
             return {
               ...quiz,
@@ -79,7 +87,7 @@ export const quizReducer = (state, action) => {
         ...state,
         loading: false,
         error: null,
-        quizzes: state.quizzes.map((quiz) => {
+        adminQuizzes: state.adminQuizzes.map((quiz) => {
           if (quiz.id === action.payload.question.quizId) {
             return {
               ...quiz,
@@ -94,6 +102,14 @@ export const quizReducer = (state, action) => {
           return quiz;
         }),
       };
+    case GET_ALL_USER_QUIZZES: {
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        userQuizzes: action.payload.userQuizzes,
+      };
+    }
     default:
       return state;
   }

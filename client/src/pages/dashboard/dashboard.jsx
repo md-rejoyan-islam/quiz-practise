@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { QuizContext } from "../../context/context";
 
 export default function Dashboard() {
-  const { quizzes } = useContext(QuizContext);
+  const { adminQuizzes } = useContext(QuizContext);
 
-  console.log(quizzes);
+  console.log(adminQuizzes);
 
   return (
     <main className="flex-grow p-10 overflow-y-scroll">
@@ -40,7 +40,7 @@ export default function Dashboard() {
             </p>
           </div>
         </Link>
-        {quizzes?.map((quiz) => (
+        {adminQuizzes?.map((quiz) => (
           <Link
             to={"/dashboard/quiz-set-entry/" + quiz.id}
             className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 group cursor-pointer"

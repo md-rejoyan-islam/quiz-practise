@@ -5,11 +5,11 @@ import QuestionAddForm from "../../components/dashboard/quiz-set-entry/question-
 import { QuizContext } from "../../context/context";
 
 export default function QuizSetEntry() {
-  const { quizzes } = useContext(QuizContext);
+  const { adminQuizzes } = useContext(QuizContext);
 
   const { id } = useParams();
 
-  const quiz = quizzes.find((quiz) => quiz.id === id);
+  const quiz = adminQuizzes.find((quiz) => quiz.id === id);
 
   if (!quiz) {
     throw new Error("Quiz not found");
