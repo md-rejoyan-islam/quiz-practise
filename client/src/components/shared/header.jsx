@@ -26,7 +26,7 @@ export default function Header() {
           </NavLink>
         </li>
 
-        {user && (
+        {user?.id && (
           <>
             {" "}
             <li>

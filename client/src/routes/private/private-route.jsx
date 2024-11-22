@@ -21,7 +21,7 @@ const privateRoutes = [
     errorElement: <NotFound />,
     children: [
       {
-        path: "/result",
+        path: "/result/:id",
         element: <Result />,
       },
       {

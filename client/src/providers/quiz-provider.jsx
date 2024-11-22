@@ -14,6 +14,7 @@ import {
   COMPLETE_LOADING,
   DELETE_QUESTION,
   GET_ALL_USER_QUIZZES,
+  GET_QUIZ_ATTEMPTS,
   QUIZ_ERROR,
   QUIZ_LOADING,
   SET_ALL_QUIZZES,
@@ -49,6 +50,14 @@ const QuizProvider = ({ children }) => {
       const response = await axios.get(`${api}/quizzes`);
 
       const quizzes = response.data.data;
+
+      // after getting all quizzes, all get quiz attempts for each quiz
+      quizzes.forEach(async (quiz) => {
+        const response = await axiosInstance.get(
+          `${api}/quizzes/${quiz.id}/attempts`
+        );
+        quiz.attempts = response.data.data;
+      });
 
       quizDispatch({
         type: GET_ALL_USER_QUIZZES,
@@ -204,8 +213,6 @@ const QuizProvider = ({ children }) => {
         data
       );
 
-      console.log(response);
-
       return { status: true, data: response.data.data };
     } catch (error) {
       toast.error(error.response.data.message);
@@ -214,9 +221,27 @@ const QuizProvider = ({ children }) => {
     }
   };
 
+  // get quiz attempts
+  const getQuizAttempts = async (id) => {
+    try {
+      const response = await axiosInstance.get(`${api}/quizzes/${id}/attempts`);
+
+      quizDispatch({
+        type: GET_QUIZ_ATTEMPTS,
+        payload: { quizAttempts: response.data.data },
+      });
+      return { status: true, data: response.data.data };
+    } catch (error) {
+      // toast.error(error.response.data.message);
+      quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
+      return { status: false, error: error.response.data.message };
+    }
+  };
+
   useEffect(() => {
     getAllAdminQuizzes();
     getUserQuizzes();
+    // getQuizAttempts();
   }, []);
 
   return (
@@ -234,6 +259,7 @@ const QuizProvider = ({ children }) => {
         getQuizById,
         loading: quizState.loading,
         attemptQuiz,
+        quizAttempts: quizState.quizAttempts,
       }}
     >
       {children}

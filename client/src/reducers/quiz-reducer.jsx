@@ -4,6 +4,7 @@ import {
   COMPLETE_LOADING,
   DELETE_QUESTION,
   GET_ALL_USER_QUIZZES,
+  GET_QUIZ_ATTEMPTS,
   QUIZ_ERROR,
   QUIZ_LOADING,
   SET_ALL_QUIZZES,
@@ -13,6 +14,7 @@ import {
 export const initialQuizState = {
   adminQuizzes: [],
   userQuizzes: [],
+  quizAttempts: null,
   loading: false,
   error: null,
 };
@@ -108,6 +110,14 @@ export const quizReducer = (state, action) => {
         loading: false,
         error: null,
         userQuizzes: action.payload.userQuizzes,
+      };
+    }
+    case GET_QUIZ_ATTEMPTS: {
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        quizAttempts: action.payload.quizAttempts,
       };
     }
     default:

@@ -1,4 +1,71 @@
+import clsx from "clsx";
+import { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { CorrectIcon, CrossIcon } from "../../components/svg";
+import { AuthContext, QuizContext } from "../../context/context";
+
 export default function Result() {
+  const { userQuizzes, getQuizById } = useContext(QuizContext);
+  const { user } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+
+  const [quizWithResult, setQuizWithResult] = useState(null);
+
+  const { id } = useParams();
+
+  const correctAnswer = quizWithResult?.questions?.filter(
+    (q) => q.correctAnswer === q.userAnswer
+  ).length;
+
+  const wrongAnswer = quizWithResult?.questions?.length - correctAnswer;
+
+  const mapQuestionsWithAnswers = (questions, attemptResult) => {
+    return questions.map((q) => {
+      const userAnswer = attemptResult?.submitted_answers?.find(
+        (answer) => answer.question_id === q.id
+      )?.answer;
+
+      return {
+        ...q,
+        userAnswer,
+      };
+    });
+  };
+
+  useEffect(() => {
+    if (!user?.id) return;
+    setLoading(true);
+    getQuizById(id)
+      .then((response) => {
+        if (response.status) {
+          const attemptResult = userQuizzes
+            .find((quiz) => quiz.id === id)
+            ?.attempts?.attempts?.find(
+              (attempt) => attempt.user.id === user.id
+            );
+          setQuizWithResult({
+            title: response.quiz.title,
+            description: response.quiz.description,
+            id: response.quiz.id,
+            questions: mapQuestionsWithAnswers(
+              response.quiz.questions,
+              attemptResult
+            ),
+          });
+        }
+      })
+
+      .catch((error) => {
+        console.log(error);
+        throw new Error("Quiz not found");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [id, user.id, userQuizzes]);
+
+  if (loading) return <div>Loading...</div>;
+
   return (
     <div className="flex min-h-[calc(100vh-124px)]  overflow-hidden container mx-auto  h-fit">
       {/* Left side */}
@@ -14,15 +81,17 @@ export default function Result() {
             <div className="w-1/2">
               <div className="flex gap-6 my-6">
                 <div>
-                  <p className="font-semibold text-2xl my-0">10</p>
+                  <p className="font-semibold text-2xl my-0">
+                    {quizWithResult?.questions?.length}
+                  </p>
                   <p className="text-gray-300">Questions</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-2xl my-0">8</p>
+                  <p className="font-semibold text-2xl my-0">{correctAnswer}</p>
                   <p className="text-gray-300">Correct</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-2xl my-0">2</p>
+                  <p className="font-semibold text-2xl my-0">{wrongAnswer}</p>
                   <p className="text-gray-300">Wrong</p>
                 </div>
               </div>
@@ -53,272 +122,74 @@ export default function Result() {
         <div className="h-[calc(100vh-124px)] overflow-y-scroll  py-8">
           <div className="px-4">
             {/* Question One */}
-            <div className="rounded-lg overflow-hidden shadow-sm mb-4">
-              <div className="bg-white p-6 !pb-2">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">
-                    1. Which of the following is NOT a binary tree traversal
-                    method?
-                  </h3>
-                </div>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                      defaultChecked=""
-                    />
-                    <span>Inorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Preorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Postorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Crossorder</span>
-                  </label>
-                </div>
-              </div>
-              <div className="flex space-x-4 bg-primary/10 px-6 py-2">
-                <button className="text-red-600 hover:text-red-800 font-medium">
-                  Delete
-                </button>
-                <button className="text-primary hover:text-primary/80 font-medium">
-                  Edit Question
-                </button>
-              </div>
-            </div>
-            <div className="rounded-lg overflow-hidden shadow-sm mb-4">
-              <div className="bg-white p-6 !pb-2">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">
-                    1. Which of the following is NOT a binary tree traversal
-                    method?
-                  </h3>
-                </div>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                      defaultChecked=""
-                    />
-                    <span>Inorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Preorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Postorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Crossorder</span>
-                  </label>
+            {quizWithResult?.questions?.map((question, index) => (
+              <div
+                className="rounded-lg overflow-hidden shadow-sm mb-4"
+                key={index}
+              >
+                <div className="bg-white p-6 !pb-5">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold">
+                      {index + 1}. {question?.question}
+                    </h3>
+                  </div>
+                  <div className="space-y-2">
+                    {question?.options.map((option, index) => (
+                      <div key={index}>
+                        <div
+                          className={clsx(
+                            "flex gap-1 items-center  px-1.5 py-1 rounded-md  border",
+                            question?.correctAnswer === option &&
+                              "bg-green-100",
+                            question?.userAnswer === option &&
+                              question?.correctAnswer !== option &&
+                              "bg-red-100"
+                          )}
+                        >
+                          {question?.correctAnswer === option && (
+                            <CorrectIcon />
+                          )}
+                          {question?.userAnswer === option &&
+                            question?.correctAnswer !== option && <CrossIcon />}
+
+                          <label className="flex items-center space-x-3">
+                            <input
+                              type="radio"
+                              name={`${question?.id}-${index}`}
+                              value={option}
+                              onChange={() => {}}
+                              className="form-radio text-buzzr-purple"
+                              checked={question.userAnswer === option}
+                            />
+                            <span>{option}</span>
+                          </label>
+                        </div>
+                        {question?.correctAnswer === option && (
+                          <p className="text-green-500 text-xs">
+                            Correct Answer.
+                            {question?.correctAnswer ===
+                              question?.userAnswer && (
+                              <span>(You have selected it)</span>
+                            )}
+                            {question?.correctAnswer !==
+                              question?.userAnswer && (
+                              <span>(You did not select it!)</span>
+                            )}
+                          </p>
+                        )}
+                        {question?.userAnswer === option &&
+                          question?.correctAnswer !== option && (
+                            <p className="text-red-500 text-xs">
+                              Wrong Answer.
+                              <span>(You have selected it)</span>
+                            </p>
+                          )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-              <div className="flex space-x-4 bg-primary/10 px-6 py-2">
-                <button className="text-red-600 hover:text-red-800 font-medium">
-                  Delete
-                </button>
-                <button className="text-primary hover:text-primary/80 font-medium">
-                  Edit Question
-                </button>
-              </div>
-            </div>
-            <div className="rounded-lg overflow-hidden shadow-sm mb-4">
-              <div className="bg-white p-6 !pb-2">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">
-                    1. Which of the following is NOT a binary tree traversal
-                    method?
-                  </h3>
-                </div>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                      defaultChecked=""
-                    />
-                    <span>Inorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Preorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Postorder</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer1"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Crossorder</span>
-                  </label>
-                </div>
-              </div>
-              <div className="flex space-x-4 bg-primary/10 px-6 py-2">
-                <button className="text-red-600 hover:text-red-800 font-medium">
-                  Delete
-                </button>
-                <button className="text-primary hover:text-primary/80 font-medium">
-                  Edit Question
-                </button>
-              </div>
-            </div>
-            {/* Question Two */}
-            <div className="rounded-lg overflow-hidden shadow-sm mb-4">
-              <div className="bg-white p-6 !pb-2">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">
-                    2. What is the maximum number of nodes at level
-                    &apos;L&apos; in a binary tree?
-                  </h3>
-                </div>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer2"
-                      className="form-radio text-buzzr-purple"
-                      defaultChecked=""
-                    />
-                    <span>2^L</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer2"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>L</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer2"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>2^(L-1)</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer2"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>2L</span>
-                  </label>
-                </div>
-              </div>
-              <div className="flex space-x-4 bg-primary/10 px-6 py-2">
-                <button className="text-red-600 hover:text-red-800 font-medium">
-                  Delete
-                </button>
-                <button className="text-primary hover:text-primary/80 font-medium">
-                  Edit Question
-                </button>
-              </div>
-            </div>
-            {/* Question 3 */}
-            <div className="rounded-lg overflow-hidden shadow-sm mb-4">
-              <div className="bg-white p-6 !pb-2">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">
-                    3. What is the height of an empty binary tree?
-                  </h3>
-                </div>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer3"
-                      className="form-radio text-buzzr-purple"
-                      defaultChecked=""
-                    />
-                    <span>0</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer3"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>-1</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer3"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>1</span>
-                  </label>
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="answer3"
-                      className="form-radio text-buzzr-purple"
-                    />
-                    <span>Undefined</span>
-                  </label>
-                </div>
-              </div>
-              <div className="flex space-x-4 bg-primary/10 px-6 py-2">
-                <button className="text-red-600 hover:text-red-800 font-medium">
-                  Delete
-                </button>
-                <button className="text-primary hover:text-primary/80 font-medium">
-                  Edit Question
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
