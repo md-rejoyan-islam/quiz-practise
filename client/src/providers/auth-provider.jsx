@@ -1,4 +1,4 @@
-import { useReducer, useRef } from "react";
+import { useReducer } from "react";
 import { AuthContext } from "../context/context";
 
 import axios from "axios";
@@ -70,35 +70,8 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // get new access token
-  const getNewAccessToken = async () => {
-    try {
-      const response = await axios.post(`${api}/auth/refresh-token`, {
-        refreshToken: localStorage.getItem("refreshToken"),
-      });
-      const { accessToken } = response.data.data;
-
-      // Cookies.set("accessToken", accessToken, {
-      //   sameSite: "strict",
-      //   secure: true,
-      // });
-      localStorage.setItem("accessToken", accessToken);
-    } catch (error) {
-      toast.error(error.response.data.message);
-      authDispatch({ type: AUTH_ERROR, payload: error.response.data });
-      // remove all cookies
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      // Cookies.remove("accessToken");
-      // Cookies.remove("refreshToken");
-    }
-  };
-
   // logout
   const authLogout = () => {
-    // remove all cookies
-    // localStorage.removeItem("accessToken");
-    // localStorage.removeItem("refreshToken");
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
     authDispatch({
@@ -107,7 +80,6 @@ const AuthProvider = ({ children }) => {
   };
 
   // call getNewAccessToken on component mount only once
-  const hasFetched = useRef(false);
 
   // useEffect(() => {
   //   if (!hasFetched.current) {

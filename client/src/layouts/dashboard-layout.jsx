@@ -1,7 +1,10 @@
+import { useContext } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { AuthContext } from "../context/context";
 
 export default function DashboardLayout() {
   const { pathname } = useLocation();
+  const { authLogout } = useContext(AuthContext);
 
   return (
     <div className="bg-gray-100 overflow-hidden h-screen flex">
@@ -50,13 +53,21 @@ export default function DashboardLayout() {
             </li>
           </ul>
         </nav>
-        <div className="mt-auto flex items-center">
-          <img
-            src="../assets/avater.webp"
-            alt="Mr Hasan"
-            className="w-10 h-10 rounded-full mr-3 object-cover"
-          />
-          <span className="text-white font-semibold">Saad Hasan</span>
+        <div className="mt-auto flex items-center flex-col gap-2 w-full">
+          <button
+            className="bg-red-500 hover:bg-red-600 text-white py-1.5 px-2 rounded-md w-full"
+            onClick={authLogout}
+          >
+            Logout
+          </button>
+          <div className="flex items-center w-full">
+            <img
+              src="../assets/avater.webp"
+              alt="Mr Hasan"
+              className="w-10 h-10 rounded-full mr-3 object-cover"
+            />
+            <span className="text-white font-semibold">Saad Hasan</span>
+          </div>
         </div>
       </aside>
       <Outlet />

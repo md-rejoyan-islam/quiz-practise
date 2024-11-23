@@ -26,30 +26,6 @@ export default function Header() {
           </NavLink>
         </li>
 
-        {user?.id && (
-          <>
-            {" "}
-            <li>
-              <NavLink
-                to={"/result"}
-                className="px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors"
-                style={{ fontFamily: "Jaro" }}
-              >
-                Result
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to={"/leaderboard"}
-                className="px-4 py-2 rounded hover:bg-primary hover:text-white transition-colors"
-                style={{ fontFamily: "Jaro" }}
-              >
-                Leaderboard
-              </NavLink>
-            </li>
-          </>
-        )}
-
         <li>
           {user ? (
             <button

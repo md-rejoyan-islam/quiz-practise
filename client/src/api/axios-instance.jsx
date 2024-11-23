@@ -19,6 +19,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
+    localStorage.removeItem("user");
     return Promise.reject(error);
   }
 );

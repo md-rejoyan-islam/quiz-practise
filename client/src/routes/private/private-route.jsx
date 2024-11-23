@@ -29,7 +29,7 @@ const privateRoutes = [
         element: <Quiz />,
       },
       {
-        path: "/leaderboard",
+        path: "/leaderboard/:id",
         element: <Leaderboard />,
       },
     ],

@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useContext, useEffect, useReducer } from "react";
 import { initialQuizState, quizReducer } from "../reducers/quiz-reducer";
 
 const api = import.meta.env.VITE_API_URL;
@@ -7,14 +7,13 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 import axiosInstance from "../api/axios-instance";
-import { QuizContext } from "../context/context";
+import { AuthContext, QuizContext } from "../context/context";
 import {
   ADD_QUESTION,
   ADD_QUIZ,
   COMPLETE_LOADING,
   DELETE_QUESTION,
   GET_ALL_USER_QUIZZES,
-  GET_QUIZ_ATTEMPTS,
   QUIZ_ERROR,
   QUIZ_LOADING,
   SET_ALL_QUIZZES,
@@ -23,6 +22,7 @@ import {
 
 const QuizProvider = ({ children }) => {
   const [quizState, quizDispatch] = useReducer(quizReducer, initialQuizState);
+  const { user } = useContext(AuthContext);
 
   // set all admin quizzes
   const getAllAdminQuizzes = async () => {
@@ -52,17 +52,29 @@ const QuizProvider = ({ children }) => {
       const quizzes = response.data.data;
 
       // after getting all quizzes, all get quiz attempts for each quiz
-      quizzes.forEach(async (quiz) => {
-        const response = await axiosInstance.get(
-          `${api}/quizzes/${quiz.id}/attempts`
+      if (quizzes.length > 0 && user?.id) {
+        // Use map to create an array of promises
+        const quizzesWithAttempts = await Promise.all(
+          quizzes.map(async (quiz) => {
+            const response = await axiosInstance.get(
+              `${api}/quizzes/${quiz.id}/attempts`
+            );
+            // Add attempts to the quiz object
+            quiz.attempts = response.data.data;
+            return quiz;
+          })
         );
-        quiz.attempts = response.data.data;
-      });
 
-      quizDispatch({
-        type: GET_ALL_USER_QUIZZES,
-        payload: { userQuizzes: quizzes },
-      });
+        quizDispatch({
+          type: GET_ALL_USER_QUIZZES,
+          payload: { userQuizzes: quizzesWithAttempts },
+        });
+      } else {
+        quizDispatch({
+          type: GET_ALL_USER_QUIZZES,
+          payload: { userQuizzes: quizzes },
+        });
+      }
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -222,27 +234,29 @@ const QuizProvider = ({ children }) => {
   };
 
   // get quiz attempts
-  const getQuizAttempts = async (id) => {
-    try {
-      const response = await axiosInstance.get(`${api}/quizzes/${id}/attempts`);
+  // const getQuizAttempts = async (id) => {
+  //   try {
+  //     const response = await axiosInstance.get(`${api}/quizzes/${id}/attempts`);
 
-      quizDispatch({
-        type: GET_QUIZ_ATTEMPTS,
-        payload: { quizAttempts: response.data.data },
-      });
-      return { status: true, data: response.data.data };
-    } catch (error) {
-      // toast.error(error.response.data.message);
-      quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
-      return { status: false, error: error.response.data.message };
-    }
-  };
+  //     quizDispatch({
+  //       type: GET_QUIZ_ATTEMPTS,
+  //       payload: { quizAttempts: response.data.data },
+  //     });
+  //     return { status: true, data: response.data.data };
+  //   } catch (error) {
+  //     // toast.error(error.response.data.message);
+  //     quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
+  //     return { status: false, error: error.response.data.message };
+  //   }
+  // };
 
   useEffect(() => {
-    getAllAdminQuizzes();
     getUserQuizzes();
+    if (user && user?.role === "admin") {
+      getAllAdminQuizzes();
+    }
     // getQuizAttempts();
-  }, []);
+  }, [user]);
 
   return (
     <QuizContext.Provider
@@ -260,6 +274,7 @@ const QuizProvider = ({ children }) => {
         loading: quizState.loading,
         attemptQuiz,
         quizAttempts: quizState.quizAttempts,
+        getUserQuizzes,
       }}
     >
       {children}

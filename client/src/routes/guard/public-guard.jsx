@@ -14,7 +14,7 @@ export default function PublicGuard({ children }) {
         to={
           user?.role === "admin"
             ? "/dashboard"
-            : location.state?.from?.pathname || "/leaderboard"
+            : location.state?.from?.pathname || "/"
         }
         state={{ from: location }}
         replace
