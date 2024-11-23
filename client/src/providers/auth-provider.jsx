@@ -77,16 +77,16 @@ const AuthProvider = ({ children }) => {
     authDispatch({
       type: AUTH_LOGOUT,
     });
+    localStorage.clear();
   };
 
-  // call getNewAccessToken on component mount only once
-
-  // useEffect(() => {
-  //   if (!hasFetched.current) {
-  //     getNewAccessToken();
-  //     hasFetched.current = true;
-  //   }
-  // }, []);
+  // auth user clear
+  const authError = () => {
+    authDispatch({
+      type: AUTH_ERROR,
+      payload: null,
+    });
+  };
 
   return (
     <AuthContext.Provider
@@ -97,6 +97,7 @@ const AuthProvider = ({ children }) => {
         authLogin,
         authRegister,
         authLogout,
+        authError,
       }}
     >
       {children}

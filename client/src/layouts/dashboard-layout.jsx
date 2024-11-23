@@ -45,10 +45,10 @@ export default function DashboardLayout() {
             </li>
             <li>
               <NavLink
-                to={"/dashboard/quiz-set-entry"}
+                to={"/dashboard/quiz-setter"}
                 className="block py-2 px-4 rounded-lg text-gray-100 hover:bg-gray-100 hover:text-primary"
               >
-                Leaderboard
+                Quiz Setter
               </NavLink>
             </li>
           </ul>

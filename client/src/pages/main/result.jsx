@@ -9,7 +9,7 @@ import { AuthContext, QuizContext } from "../../context/context";
 export default function Result() {
   const { userQuizzes, getQuizById } = useContext(QuizContext);
   const { user } = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [quizWithResult, setQuizWithResult] = useState(null);
 
@@ -34,11 +34,8 @@ export default function Result() {
     });
   };
 
-  console.log(quizWithResult);
-
   useEffect(() => {
     if (!user?.id) return;
-    setLoading(true);
     getQuizById(id)
       .then((response) => {
         if (response.status) {
@@ -72,17 +69,14 @@ export default function Result() {
             yourMark: correctAnswer * 5,
             yourPercentage: (correctAnswer / totalQuestions) * 100,
           });
+        } else {
+          setQuizWithResult(null);
         }
-      })
-
-      .catch((error) => {
-        console.log(error);
-        throw new Error("Quiz not found");
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [id, user.id, userQuizzes]);
+  }, [id, user?.id, userQuizzes]);
 
   if (loading) return <div>Loading...</div>;
 

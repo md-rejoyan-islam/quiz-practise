@@ -7,6 +7,8 @@ import QuestionAddForm from "./question-add-form";
 export default function Question({ question, index }) {
   const { deleteQuestion } = useContext(QuizContext);
 
+  console.log(question);
+
   const [isoOpenModal, setIsOpenModal] = useState(false);
 
   const handleDeleteQuestion = () => {
@@ -44,7 +46,7 @@ export default function Question({ question, index }) {
           </h3>
         </div>
         <div className="space-y-2">
-          {question.options.map((option, i) => (
+          {question?.options.map((option, i) => (
             <label className="flex items-center space-x-3" key={i}>
               <input
                 type="radio"

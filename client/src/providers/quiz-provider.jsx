@@ -22,7 +22,8 @@ import {
 
 const QuizProvider = ({ children }) => {
   const [quizState, quizDispatch] = useReducer(quizReducer, initialQuizState);
-  const { user } = useContext(AuthContext);
+
+  const { user, authLogout } = useContext(AuthContext);
 
   // set all admin quizzes
   const getAllAdminQuizzes = async () => {
@@ -37,7 +38,9 @@ const QuizProvider = ({ children }) => {
         payload: { adminQuizzes: quizzes },
       });
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (error?.response?.status === 401) {
+        authLogout();
+      }
     } finally {
       quizDispatch({ type: COMPLETE_LOADING });
     }
@@ -53,7 +56,6 @@ const QuizProvider = ({ children }) => {
 
       // after getting all quizzes, all get quiz attempts for each quiz
       if (quizzes.length > 0 && user?.id) {
-        // Use map to create an array of promises
         const quizzesWithAttempts = await Promise.all(
           quizzes.map(async (quiz) => {
             const response = await axiosInstance.get(
@@ -64,19 +66,17 @@ const QuizProvider = ({ children }) => {
             return quiz;
           })
         );
-
-        quizDispatch({
+        return quizDispatch({
           type: GET_ALL_USER_QUIZZES,
           payload: { userQuizzes: quizzesWithAttempts },
         });
-      } else {
-        quizDispatch({
-          type: GET_ALL_USER_QUIZZES,
-          payload: { userQuizzes: quizzes },
-        });
       }
+      quizDispatch({
+        type: GET_ALL_USER_QUIZZES,
+        payload: { userQuizzes: quizzes },
+      });
     } catch (error) {
-      toast.error(error.response.data.message);
+      quizDispatch({ type: QUIZ_ERROR, payload: error?.response?.data });
     } finally {
       quizDispatch({ type: COMPLETE_LOADING });
     }
@@ -99,6 +99,9 @@ const QuizProvider = ({ children }) => {
       return { status: true, id: quiz.id };
     } catch (error) {
       toast.error(error.response.data.message);
+      if (error.response.status === 401) {
+        authLogout();
+      }
       quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
       return { status: false, id: null };
     }
@@ -122,6 +125,9 @@ const QuizProvider = ({ children }) => {
       // show success message
       toast.success("Question added successfully");
     } catch (error) {
+      if (error.response.status === 401) {
+        authLogout();
+      }
       toast.error(error.response.data.message);
       quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
     }
@@ -145,6 +151,9 @@ const QuizProvider = ({ children }) => {
         return { status: false, error: "Data not found." };
       }
     } catch (error) {
+      if (error.response.status === 401) {
+        authLogout();
+      }
       toast.error(error.response.data.message);
       quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
       return { status: false, error: error.response.data.message };
@@ -164,6 +173,9 @@ const QuizProvider = ({ children }) => {
       quizDispatch({ type: UPDATE_QUESTION, payload: { question } });
       toast.success("Question updated successfully");
     } catch (error) {
+      if (error.response.status === 401) {
+        authLogout();
+      }
       toast.error(error.response.data.message);
       quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
       return { status: false, error: error.response.data.message };
@@ -181,6 +193,9 @@ const QuizProvider = ({ children }) => {
         return { status: false, error: "Data not found." };
       }
     } catch (error) {
+      if (error.response.status === 401) {
+        authLogout();
+      }
       quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
       return { status: false, error: error.response.data.message };
     }
@@ -193,6 +208,9 @@ const QuizProvider = ({ children }) => {
       toast.success("Quiz updated successfully");
       return { status: true };
     } catch (error) {
+      if (error.response.status === 401) {
+        authLogout();
+      }
       quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
 
       return { status: false };
@@ -208,6 +226,9 @@ const QuizProvider = ({ children }) => {
 
       return { status: true, quiz };
     } catch (error) {
+      if (error.response.status === 401) {
+        authLogout();
+      }
       quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
       return { status: false, error: error.response.data.message };
     } finally {
@@ -216,39 +237,43 @@ const QuizProvider = ({ children }) => {
   };
 
   /// quiz attempt
-  const attemptQuiz = async ({ data, id }) => {
-    console.log("re");
-
+  const attemptQuiz = async ({ data, id, navigate }) => {
     try {
       const response = await axiosInstance.post(
         `${api}/quizzes/${id}/attempt`,
         data
       );
+      console.log(response);
 
-      return { status: true, data: response.data.data };
+      toast.success("Quiz attempted successfully");
+      navigate(`/result/` + response.data.data.quiz.id);
     } catch (error) {
+      if (error.response.status === 401) {
+        authLogout();
+      }
       toast.error(error.response.data.message);
       quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
       return { status: false, error: error.response.data.message };
     }
   };
 
-  // get quiz attempts
-  // const getQuizAttempts = async (id) => {
-  //   try {
-  //     const response = await axiosInstance.get(`${api}/quizzes/${id}/attempts`);
+  // get quiz attempts by quiz id
+  const getQuizAttemptsByQuizId = async (id) => {
+    try {
+      const response = await axiosInstance.get(`${api}/quizzes/${id}/attempts`);
 
-  //     quizDispatch({
-  //       type: GET_QUIZ_ATTEMPTS,
-  //       payload: { quizAttempts: response.data.data },
-  //     });
-  //     return { status: true, data: response.data.data };
-  //   } catch (error) {
-  //     // toast.error(error.response.data.message);
-  //     quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
-  //     return { status: false, error: error.response.data.message };
-  //   }
-  // };
+      const attempts = response.data.data;
+
+      return { status: true, attempts };
+    } catch (error) {
+      if (error.response.status === 401) {
+        authLogout();
+      }
+
+      quizDispatch({ type: QUIZ_ERROR, payload: error.response.data });
+      return { status: false, error: error.response.data.message };
+    }
+  };
 
   useEffect(() => {
     getUserQuizzes();
@@ -257,6 +282,12 @@ const QuizProvider = ({ children }) => {
     }
     // getQuizAttempts();
   }, [user]);
+
+  // useEffect(() => {
+  //   if (!localStorage.getItem("user")) {
+  //     authLogout();
+  //   }
+  // }, []);
 
   return (
     <QuizContext.Provider
@@ -275,6 +306,7 @@ const QuizProvider = ({ children }) => {
         attemptQuiz,
         quizAttempts: quizState.quizAttempts,
         getUserQuizzes,
+        getQuizAttemptsByQuizId,
       }}
     >
       {children}

@@ -38,7 +38,7 @@ Option.propTypes = {
   label: PropTypes.string.isRequired,
   checkboxId: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
-  error: PropTypes.bool,
+  error: PropTypes.object,
   correctAnswer: PropTypes.string,
   setCorrectAnswer: PropTypes.func,
   value: PropTypes.string,

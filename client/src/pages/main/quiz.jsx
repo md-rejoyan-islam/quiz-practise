@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext, QuizContext } from "../../context/context";
 
 export default function Quiz() {
@@ -8,6 +8,7 @@ export default function Quiz() {
   const [myQuiz, setMyQuiz] = useState({});
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [currentQuestion, setCurrentQuestion] = useState(1);
 
@@ -19,8 +20,16 @@ export default function Quiz() {
     attemptQuiz({
       id: myQuiz.id,
       data: { answers },
+      navigate,
     });
   };
+
+  const pertification = myQuiz?.questions?.filter(
+    (q) => q.myAnswer !== null
+  ).length;
+  const remaining = myQuiz?.questions?.filter(
+    (q) => q.myAnswer === null
+  ).length;
 
   useEffect(() => {
     setLoading(true);
@@ -29,8 +38,7 @@ export default function Quiz() {
         if (response.status) {
           setMyQuiz({
             ...response.quiz,
-            participantion: 0,
-            remaining: response.quiz.questions.length,
+
             total: response.quiz.questions.length,
             questions: response.quiz.questions.map((q) => ({
               ...q,
@@ -62,10 +70,10 @@ export default function Quiz() {
               Total number of questions : {myQuiz?.total}
             </div>
             <div className="w-fit bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full inline-block mb-2">
-              Participation : {myQuiz?.participantion}
+              Participation : {pertification}
             </div>
             <div className="w-fit bg-gray-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded-full inline-block mb-2">
-              Remaining : {myQuiz?.remaining}
+              Remaining : {remaining}
             </div>
           </div>
         </div>
@@ -106,8 +114,6 @@ export default function Quiz() {
                           newQuestions[currentQuestion - 1].myAnswer = option;
                           return {
                             ...prev,
-                            remaining: prev.remaining - 1,
-                            participantion: prev.participantion + 1,
                             questions: newQuestions,
                           };
                         });
@@ -136,6 +142,12 @@ export default function Quiz() {
                 <button
                   onClick={handleSubmit}
                   className="w-1/2 text-center disabled:opacity-70 disabled:hover:bg-primary ml-auto block bg-primary text-white py-2 px-4 rounded-md hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary mb-6 font-semibold my-8"
+                  disabled={remaining !== 0}
+                  title={
+                    remaining
+                      ? `You have ${remaining} questions left`
+                      : "Submit the quiz"
+                  }
                 >
                   Submit
                 </button>

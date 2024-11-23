@@ -5,18 +5,20 @@ import DraftQuizzes from "../../pages/dashboard/draft-quizzes";
 import PublishedQuizzes from "../../pages/dashboard/published-quizzes";
 import QuizSet from "../../pages/dashboard/quiz-set";
 import QuizSetEntry from "../../pages/dashboard/quiz-set-entry";
+import QuizSetLeaderboard from "../../pages/dashboard/quiz-set-leaderboard";
 import Leaderboard from "../../pages/main/leaderboard";
 import Quiz from "../../pages/main/quiz";
 import Result from "../../pages/main/result";
 import NotFound from "../../pages/not-found";
-import PrivateGuard from "../guard/private-guard";
+import AdminPrivateGuard from "../guard/admin-private-guard";
+import UserPrivateGuard from "../guard/user-private-guard";
 
 const privateRoutes = [
   {
     element: (
-      <PrivateGuard>
+      <UserPrivateGuard>
         <MainLayout />
-      </PrivateGuard>
+      </UserPrivateGuard>
     ),
     errorElement: <NotFound />,
     children: [
@@ -38,9 +40,9 @@ const privateRoutes = [
     path: "/dashboard",
     errorElement: <NotFound />,
     element: (
-      <PrivateGuard>
+      <AdminPrivateGuard>
         <DashboardLayout />
-      </PrivateGuard>
+      </AdminPrivateGuard>
     ),
     children: [
       {
@@ -62,6 +64,10 @@ const privateRoutes = [
       {
         path: "quiz-set-entry/:id",
         element: <QuizSetEntry />,
+      },
+      {
+        path: "leaderboard/:id",
+        element: <QuizSetLeaderboard />,
       },
     ],
   },

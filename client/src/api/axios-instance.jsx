@@ -15,6 +15,8 @@ axiosInstance.interceptors.request.use(
     const token = Cookies.get("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      localStorage.removeItem("user");
     }
     return config;
   },
@@ -36,12 +38,9 @@ axiosInstance.interceptors.response.use(
       const refreshToken = Cookies.get("refreshToken");
 
       if (!refreshToken || refreshToken === "undefined") {
-        localStorage.clear();
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
-
-        // navigate to login page
-
+        // localStorage.clear();
+        // Cookies.remove("accessToken");
+        // Cookies.remove("refreshToken");
         return Promise.reject(error);
       }
 
@@ -51,11 +50,11 @@ axiosInstance.interceptors.response.use(
         });
 
         if (response.status === 200) {
-          Cookies.set("accessToken", response.data.accessToken, {
+          Cookies.set("accessToken", response.data.data.accessToken, {
             sameSite: "strict",
             secure: true,
           });
-          Cookies.set("refreshToken", response.data.refreshToken, {
+          Cookies.set("refreshToken", response.data.data.refreshToken, {
             sameSite: "strict",
             secure: true,
           });

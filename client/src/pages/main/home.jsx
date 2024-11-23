@@ -8,8 +8,6 @@ export default function Home() {
   const { user } = useContext(AuthContext);
   const { userQuizzes } = useContext(QuizContext);
 
-  console.log(userQuizzes);
-
   return (
     <div className="container mx-auto ">
       {user && <UserBanner name={user?.full_name} />}

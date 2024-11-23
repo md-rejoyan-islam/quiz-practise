@@ -57,11 +57,13 @@ export const quizReducer = (state, action) => {
         ...state,
         loading: false,
         error: null,
-        adminQuizzes: state.adminQuizzes.map((quiz) => {
+        adminQuizzes: state?.adminQuizzes.map((quiz) => {
           if (quiz.id === action.payload.id) {
             return {
               ...quiz,
-              Questions: [...quiz.Questions, action.payload.question],
+              Questions: quiz?.Questions
+                ? [...quiz.Questions, action.payload.question]
+                : [action.payload.question],
             };
           }
           return quiz;

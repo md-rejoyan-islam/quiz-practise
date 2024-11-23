@@ -25,7 +25,7 @@ export default function SingleQuizSet({ quiz, user }) {
         <div className="hidden absolute inset-0 transition-all bg-black/80 w-full h-full left-0 top-0 text-white group-hover:grid place-items-center">
           <div>
             <h1 className="text-3xl font-bold">Already Participated</h1>
-            <p className="text-center">You got 20 out of 50</p>
+            {/* <p className="text-center">You got 20 out of 50</p> */}
             <p className="text-center">Click to view your result</p>
           </div>
         </div>

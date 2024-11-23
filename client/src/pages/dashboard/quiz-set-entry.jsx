@@ -9,11 +9,7 @@ export default function QuizSetEntry() {
 
   const { id } = useParams();
 
-  const quiz = adminQuizzes.find((quiz) => quiz.id === id);
-
-  if (!quiz) {
-    throw new Error("Quiz not found");
-  }
+  const quiz = adminQuizzes?.find((quiz) => quiz?.id === id);
 
   return (
     <main className="md:flex-grow px-4 sm:px-6 lg:px-8 py-8 overflow-scroll">
@@ -47,32 +43,47 @@ export default function QuizSetEntry() {
           </ol>
         </nav>
         <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-8 lg:gap-12 ">
-          {/* Left Column */}
-          <div className="">
-            <h2 className="text-3xl font-bold mb-4">{quiz?.title}</h2>
-            <div className="bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded-full inline-block mb-4">
-              Total number of questions : {quiz?.Questions?.length}
+          {quiz ? (
+            <>
+              {" "}
+              {/* Left Column */}
+              <div className="">
+                <h2 className="text-3xl font-bold mb-4">{quiz?.title}</h2>
+                <div className="bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded-full inline-block mb-4">
+                  Total number of questions : {quiz?.Questions?.length}
+                </div>
+                <p className="text-gray-600 mb-4">
+                  {quiz?.description || "No description available"}
+                </p>
+                <div className="space-y-4">
+                  <h2 className="text-xl font-bold text-foreground">
+                    Create Quiz
+                  </h2>
+                  <QuestionAddForm id={quiz?.id || ""} type="add" />
+                </div>
+              </div>
+              {/* Right Column */}
+              <div className="px-4 ">
+                {quiz?.Questions?.length ? (
+                  quiz?.Questions?.map((question, index) => (
+                    <Question
+                      key={question.id}
+                      question={question}
+                      index={index}
+                    />
+                  ))
+                ) : (
+                  <p className="text-center text-lg text-red-500 ">
+                    No questions available
+                  </p>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="text-center text-lg text-red-500 ">
+              No quiz found
             </div>
-            <p className="text-gray-600 mb-4">
-              {quiz?.description || "No description available"}
-            </p>
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold text-foreground">Create Quiz</h2>
-              <QuestionAddForm id={quiz.id} type="add" />
-            </div>
-          </div>
-          {/* Right Column */}
-          <div className="px-4 ">
-            {quiz?.Questions?.length ? (
-              quiz?.Questions?.map((question, index) => (
-                <Question key={question.id} question={question} index={index} />
-              ))
-            ) : (
-              <p className="text-center text-lg text-red-500 ">
-                No questions available
-              </p>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </main>
